@@ -1,6 +1,5 @@
 package com.example.demo.validation;
 
-import com.example.demo.model.User;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

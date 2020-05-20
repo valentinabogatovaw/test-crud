@@ -1,15 +1,12 @@
 package com.example.demo.service;
+import static com.example.demo.TimeUtils.getTime;
+
 import com.example.demo.exceptions.ServiceException;
 import com.example.demo.exceptions.UserNotFoundException;
 import com.example.demo.model.StatusChangedResponse;
 import com.example.demo.model.User;
 import com.example.demo.model.UserStatus;
 import com.example.demo.repository.UserRepository;
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -21,23 +18,23 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
-//  private static final String EMAILREGEX = "[^@]+@[^.]+\\..+";
-//  private static final String PHONEREGEX = "^[0-9]+$";
-
   @Autowired
   private UserRepository userRepository;
 
 
   @Override
-  public Optional<Long> saveUser(User user) throws ServiceException {
-    if (isStatusSetOnline(user)) user.setLastUpdate(getTime());
-    return Optional.ofNullable(userRepository.save(user).getID());
+  public Long saveUser(User user) throws ServiceException {
+    if (isStatusSetOnline(user)){
+      user.setLastUpdate(getTime());
+    }
+    return Optional.ofNullable(userRepository.save(user).getID())
+                   .orElseThrow(() -> new ServiceException("Unable to save user"));
   }
 
   @Override
-  public Optional<User> getUser(Long ID) {
-
-    return userRepository.findById(ID);
+  public User getUser(Long ID) {
+    return userRepository.findById(ID)
+                         .orElseThrow(() -> new UserNotFoundException("User with ID " + ID + " doesn't exist"));
   }
 
   @Override
@@ -45,7 +42,9 @@ public class UserServiceImpl implements UserService {
     Optional<User> optionalUser = userRepository.findById(ID);
     if (optionalUser.isPresent()) {
       User user = optionalUser.get();
-      if (isStatusSetOnline(user)) user.setLastUpdate(getTime());
+      if (isStatusSetOnline(user)) {
+        user.setLastUpdate(getTime());
+      }
       UserStatus current = user.getUserStatus();
       user.setUserStatus(userStatus);
       userRepository.save(user);
@@ -72,13 +71,4 @@ public class UserServiceImpl implements UserService {
     return false;
 
   }
-
-  private LocalDateTime getTime(){
-    Instant instant = Instant.now();
-    ZoneId z = ZoneId.of( "Europe/Moscow" );
-    ZonedDateTime zdt = instant.atZone( z );
-    return zdt.toLocalDateTime();
-  }
-
-
 }

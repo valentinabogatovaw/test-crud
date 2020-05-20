@@ -2,13 +2,8 @@ package com.example.demo.validation;
 
 import com.example.demo.exceptions.ServiceException;
 import com.example.demo.model.User;
-import com.example.demo.model.UserStatus;
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 

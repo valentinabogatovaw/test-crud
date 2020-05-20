@@ -1,12 +1,11 @@
 package com.example.demo.endpoint;
+
 import com.example.demo.exceptions.ServiceException;
-import com.example.demo.exceptions.UserNotFoundException;
 import com.example.demo.model.StatusChangedResponse;
 import com.example.demo.model.User;
 import com.example.demo.model.UserStatus;
 import com.example.demo.service.UserService;
 import java.util.List;
-import java.util.Optional;
 import javax.validation.Valid;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,15 +32,14 @@ public class UserController {
 
   @PostMapping(value = "user", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
-  public Long saveUser(@RequestBody @Valid User userJson) throws ServiceException {
-    Optional<Long> id = userService.saveUser(userJson);
-    return id.orElseThrow(() -> new ServiceException("Unable to save user"));
+  public Long saveUser(@RequestBody @Valid User userJson){
+    return userService.saveUser(userJson);
 
   }
 
   @RequestMapping(value = "user", method = RequestMethod.GET)
   public User getUser(@RequestParam("ID") Long ID) {
-    return userService.getUser(ID).orElseThrow(() -> new UserNotFoundException("User with ID " + ID + " doesn't exist"));
+    return userService.getUser(ID);
   }
 
   @RequestMapping(value = "user", method = RequestMethod.PUT)
